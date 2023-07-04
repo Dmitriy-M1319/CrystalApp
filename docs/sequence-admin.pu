@@ -1,0 +1,39 @@
+@startuml Диаграмма последовательностей для администратора
+    actor Администратор as Admin
+    participant Сервис as Service
+    database "База данных" as Db
+
+    Admin -> Service: Запрос на просмотр\nзаказов клиентов
+    Service -> Db: Получение заказов
+    Service <-- Db: Записи заказов
+    Admin <-- Service: Список заказов\n(активных и закрытых)
+
+    Admin -> Service: Запрос на закрытие заказа
+    Service -> Db: Получение заказа
+    Service <-- Db: Запись заказа
+    Service -> Service: Изменение статуса
+    Service -> Db: Сохранение заказа
+    Service <-- Db: Запись измененного\nзаказа
+    Admin <-- Service: Ответ о закрытом заказе
+
+    Admin -> Service: Запрос на создание заявки\nна поставку
+    Service -> Db: Создание заявки
+    Service <-- Db: Запись новой заявки
+    Admin <-- Service: Новая заявка\nна поставку
+
+    Admin -> Service: Запрос на закрытие заявки\nна поставку
+    Service -> Db: Получение заявки
+    Service <-- Db: Запись активной заявки
+    Service -> Service: Изменение статуса заявки
+    Service -> Db: Сохранение заявки
+    Service <-- Db: Запись измененной\nзаявки
+    Admin <-- Service: Ответ о закрытой заявке
+
+    Admin -> Service: Запрос на редактирование товара
+    Service -> Db: Получение товара
+    Service <-- Db: Запись искомого товара
+    Service -> Service: Изменение данных
+    Service -> Db: Сохранение товара
+    Service <-- Db: Запись измененного товара
+    Admin <-- Service: Отредактированный товар
+@enduml

@@ -1,0 +1,24 @@
+@startuml Диаграмма последовательностей для клиента
+    actor Клиент as Client
+    participant Сервис as Service
+    database "База данных" as Db
+
+    Client -> Service: Запрос на просмотр\nтоваров
+    Service -> Db: Получение товаров
+    Service <-- Db: Записи товаров
+    Client <-- Service: Список товаров\nна складе
+
+    Client -> Service: Запрос на просмотр\nкорзины
+    Service -> Service: Получение корзины из\nсессии
+    Client <-- Service: Список товаров\nв корзине
+
+    Client -> Service: Запрос на добавление\nтовара в корзину
+    Service -> Service: Добавление товара
+    Client <-- Service: Список товаров\nв корзине
+
+    Client -> Service: Запрос на оформление\nзаказа
+    Service -> Service: Получение товаров\nиз корзины
+    Service -> Db: Создание заказа
+    Service <-- Db: Запись нового заказа
+    Client <-- Service: Новый заказ
+@enduml
