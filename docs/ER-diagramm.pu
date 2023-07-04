@@ -1,0 +1,53 @@
+@startuml ER-диаграмма для базы данных
+entity Product {
+    * id: integer
+    --
+    product_name: str
+    company: str
+    client_price: float
+    purchase_price: float
+    count: int
+}
+entity User {
+    * id: integer
+    --
+    surname: str
+    name: str
+    email: str (email)
+    phone_number: str
+    login: str
+    password: str
+    is_admin: bool
+}
+entity Order {
+    * id: integer
+    --
+    client: User
+    promocode: str
+    total_price: float
+    address: str | None
+    is_delivery: bool
+    status: bool
+}
+entity Order_Product {
+    * id: integer
+    --
+    order: Order
+    product: Product
+    product_count: int
+}
+entity Application {
+    * id: integer
+    --
+    product: Product
+    count: int
+    provider: str
+    price: float
+    status: bool
+}
+
+User ||--o{ Order
+Product ||--o{ Order_Product
+Order ||--o{ Order_Product
+Product ||--{ Application
+@enduml
