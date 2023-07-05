@@ -27,6 +27,7 @@ entity Order {
     total_price: float
     address: str | None
     is_delivery: bool
+    payment: str
     status: bool
 }
 entity Order_Product {
