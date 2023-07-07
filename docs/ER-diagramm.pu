@@ -22,7 +22,6 @@ entity Order {
     * id: integer
     --
     client: User
-    promocode: str
     total_price: float
     address: str | None
     is_delivery: bool
@@ -49,5 +48,5 @@ entity ProductApplication {
 User ||--o{ Order
 Product ||--o{ Order_Product
 Order ||--o{ Order_Product
-Product ||--{ Application
+Product ||--{ ProductApplication
 @enduml
