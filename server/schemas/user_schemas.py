@@ -19,7 +19,3 @@ class UserUpdate(BaseModel):
     name: str
     email: str
     phone_number: str | None
-
-
-class Password(BaseModel):
-    password: str
