@@ -9,7 +9,6 @@ user.Base.metadata.create_all(bind=engine)
 application.Base.metadata.create_all(bind=engine)
 order.Base.metadata.create_all(bind=engine)
 product.Base.metadata.create_all(bind=engine)
-
 app = FastAPI()
 app.include_router(products.router)
 

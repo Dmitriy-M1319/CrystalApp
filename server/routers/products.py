@@ -9,6 +9,7 @@ from ..dependencies import get_database_session
 from ..schemas import product_schemas, extra_schemas
 from ..crud import product_crud
 
+
 router = APIRouter(
     prefix='/products',
     tags=['products']
@@ -37,8 +38,7 @@ def get_product_by_id(db: Annotated[Session, Depends(get_database_session)],
 def create_product(db: Annotated[Session, Depends(get_database_session)],
                    product: product_schemas.ProductCreateOrUpdateModel):
     try:
-        new_product = product_crud.create_product(db, product)
-        return new_product
+        return product_crud.create_product(db, product)
     except SQLAlchemyError as sql_error:
         raise HTTPException(status_code=400, detail=str(sql_error.__dict__['orig']))
 

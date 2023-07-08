@@ -16,7 +16,7 @@ def get_products(database: Session, company_filter: str | None = None):
 def get_product(database: Session, product_id: int):
     product = database.query(Product).filter(Product.id == product_id).first()
     if not product:
-        raise RowNotFoundException('Product', product_id)
+        raise RowNotFoundException('Product', str(product_id))
     else:
         return product
 
@@ -32,9 +32,7 @@ def create_product(database: Session, product: ProductCreateOrUpdateModel):
 def update_product(database: Session,
                    product_id: int,
                    product_data: ProductCreateOrUpdateModel):
-    updated_product = database.query(Product).filter(Product.id == product_id).first()
-    if not updated_product:
-        raise RowNotFoundException('Product', product_id)
+    updated_product = get_product(database, product_id)
     updated_product.name = product_data.name
     updated_product.company = product_data.company
     updated_product.client_price = product_data.client_price
@@ -47,8 +45,6 @@ def update_product(database: Session,
 
 
 def delete_product(database: Session, product_id: int):
-    deleted_product = database.query(Product).filter(Product.id == product_id).first()
-    if not deleted_product:
-        raise RowNotFoundException('Product', product_id)
+    deleted_product = get_product(database, product_id)
     database.delete(deleted_product)
     database.commit()
