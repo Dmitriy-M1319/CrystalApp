@@ -1,13 +1,13 @@
-import sqlalchemy.exc
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 
+from ..exceptions import RowNotFoundException
 from ..dependencies import get_database_session
-from ..schemas import product_schemas
+from ..schemas import product_schemas, extra_schemas
 from ..crud import product_crud
-
 
 router = APIRouter(
     prefix='/products',
@@ -21,36 +21,46 @@ def get_product_catalog(db: Annotated[Session, Depends(get_database_session)],
     return product_crud.get_products(db, company_filter)
 
 
-@router.get('/{product_id}', response_model=product_schemas.ProductGetModel)
+@router.get('/{product_id}',
+            response_model=product_schemas.ProductGetModel,
+            responses={404: {'model': extra_schemas.Message}})
 def get_product_by_id(db: Annotated[Session, Depends(get_database_session)],
                       product_id: int):
-    product = product_crud.get_product(db, product_id)
-    if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
-    else:
-        return product
+    try:
+        return product_crud.get_product(db, product_id)
+    except RowNotFoundException as e:
+        raise HTTPException(status_code=404, detail=e)
 
 
-@router.post('/', response_model=product_schemas.ProductGetModel)
+@router.post('/', response_model=product_schemas.ProductGetModel,
+             responses={400: {'model': extra_schemas.Message}})
 def create_product(db: Annotated[Session, Depends(get_database_session)],
                    product: product_schemas.ProductCreateOrUpdateModel):
-    new_product = product_crud.create_product(db, product)
-    return new_product
+    try:
+        new_product = product_crud.create_product(db, product)
+        return new_product
+    except SQLAlchemyError as sql_error:
+        raise HTTPException(status_code=400, detail=str(sql_error.__dict__['orig']))
 
 
-@router.put('/{product_id}', response_model=product_schemas.ProductGetModel)
+@router.put('/{product_id}', response_model=product_schemas.ProductGetModel,
+            responses={404: {'model': extra_schemas.Message},
+                       400: {'model': extra_schemas.Message}})
 def update_product(db: Annotated[Session, Depends(get_database_session)],
                    product_id: int, product_data: product_schemas.ProductCreateOrUpdateModel):
     try:
         return product_crud.update_product(db, product_id, product_data)
-    except Exception as e:
+    except RowNotFoundException as e:
         raise HTTPException(status_code=404, detail=e)
+    except SQLAlchemyError as sql_error:
+        raise HTTPException(status_code=400, detail=str(sql_error.__dict__['orig']))
 
 
-@router.delete('/{product_id}', response_model=None)
+@router.delete('/{product_id}', response_model=None,
+               responses={404: {'model': extra_schemas.Message}})
 def remove_product(db: Annotated[Session, Depends(get_database_session)],
                    product_id: int):
     try:
         return product_crud.delete_product(db, product_id)
-    except Exception as e:
+    except RowNotFoundException as e:
         raise HTTPException(status_code=404, detail=e)
