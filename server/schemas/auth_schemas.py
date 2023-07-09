@@ -6,8 +6,16 @@ from pydantic import BaseModel, ValidationError, validator
 _password_regex: str = r'^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d).*$'
 
 
+class Token(BaseModel):
+    access_token: str
+
+
+class AuthenticateUserData(BaseModel):
+    email: str
+    password: str
+
+
 class PasswordUpdate(BaseModel):
-    user: int
     new_password: str
     new_password_confirm: str
 
@@ -18,7 +26,7 @@ class PasswordUpdate(BaseModel):
         return passwd
 
     @validator('new_password_confirm')
-    def validate_password(cls, passwd: str, values):
+    def validate_password_confirm(cls, passwd: str, values):
         if 'new_password' in values and passwd != values['new_password']:
             raise ValidationError("passwords don't match")
         return passwd

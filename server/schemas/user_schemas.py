@@ -13,6 +13,9 @@ class UserCreate(BaseModel):
 class UserModel(UserCreate):
     id: int
 
+    class Config:
+        orm_mode = True
+
 
 class UserUpdate(BaseModel):
     surname: str

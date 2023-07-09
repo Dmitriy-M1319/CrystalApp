@@ -10,7 +10,7 @@ from ..exceptions import RowNotFoundException
 def get_user(database: Session, user_id: int) -> Type[User]:
     user = database.query(User).filter(User.id == user_id).first()
     if not user:
-        raise RowNotFoundException('User', user_id)
+        raise RowNotFoundException('User', str(user_id))
     else:
         return user
 

@@ -36,16 +36,6 @@ def get_user(db: Annotated[Session, Depends(get_database_session)], email: str):
         raise HTTPException(status_code=404, detail=e)
 
 
-@router.post('/',
-             response_model=user_schemas.UserModel,
-             responses={400: {'model': extra_schemas.Message}})
-def create_user(db: Annotated[Session, Depends(get_database_session)], user: user_schemas.UserCreate):
-    try:
-        return user_crud.create_user(db, user)
-    except SQLAlchemyError as e:
-        raise HTTPException(status_code=400, detail=str(e.__dict__['orig']))
-
-
 @router.put('/{user_id}',
             response_model=user_schemas.UserModel,
             responses={

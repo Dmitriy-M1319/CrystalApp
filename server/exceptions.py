@@ -1,5 +1,5 @@
 class RowNotFoundException(BaseException):
-    def __int__(self, model: str, key: str):
+    def __init__(self, model: str, key: str):
         self.model = model
         self.model_key = key
 
