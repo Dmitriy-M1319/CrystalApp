@@ -31,7 +31,7 @@ def create_user(database: Session, user: user_schemas.UserCreate) -> User:
     return new_user
 
 
-def update_user(database: Session, user_id: int, user_data: user_schemas.UserUpdate) -> Type[User]:
+def update_user(database: Session, user_id: int, user_data: user_schemas.UserUpdate | User) -> Type[User]:
     existing_user = get_user(database, user_id)
     existing_user.surname = user_data.surname
     existing_user.name = user_data.name

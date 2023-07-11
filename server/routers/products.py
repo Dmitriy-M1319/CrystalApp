@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
 from ..exceptions import RowNotFoundException
-from ..dependencies import get_database_session
+from ..dependencies import *
 from ..schemas import product_schemas, extra_schemas
 from ..crud import product_crud
 
@@ -34,6 +34,7 @@ def get_product_by_id(db: Annotated[Session, Depends(get_database_session)],
 
 
 @router.post('/', response_model=product_schemas.ProductGetModel,
+             dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
              responses={400: {'model': extra_schemas.Message}})
 def create_product(db: Annotated[Session, Depends(get_database_session)],
                    product: product_schemas.ProductCreateOrUpdateModel):
@@ -44,6 +45,7 @@ def create_product(db: Annotated[Session, Depends(get_database_session)],
 
 
 @router.put('/{product_id}', response_model=product_schemas.ProductGetModel,
+            dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
             responses={404: {'model': extra_schemas.Message},
                        400: {'model': extra_schemas.Message}})
 def update_product(db: Annotated[Session, Depends(get_database_session)],
@@ -57,6 +59,7 @@ def update_product(db: Annotated[Session, Depends(get_database_session)],
 
 
 @router.delete('/{product_id}', response_model=None,
+               dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
                responses={404: {'model': extra_schemas.Message}})
 def remove_product(db: Annotated[Session, Depends(get_database_session)],
                    product_id: int):

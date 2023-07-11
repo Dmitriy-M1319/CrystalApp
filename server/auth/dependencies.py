@@ -7,7 +7,6 @@ from fastapi import Depends, HTTPException
 from jose import jwt, JWTError
 
 from ..crud import user_crud
-from ..dependencies import oauth_scheme
 from ..schemas import auth_schemas
 from ..models.user import User
 from ..schemas.user_schemas import UserCreate
@@ -18,7 +17,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_user_password(user: UserCreate):
-    # здесь сразу хешируем пароль у пользователя
     user.password = pwd_context.hash(user.password)
     return user
 
@@ -46,7 +44,7 @@ def generate_token(token_data: dict, expires_delta: timedelta | None = None):
     return jwt_token
 
 
-def get_authenticated_user(database: Session, token: Annotated[str, Depends(oauth_scheme)]):
+def get_current_user(database: Session, token: str):
     credentials_exc = HTTPException(status_code=401, detail="Could not validate credentials")
 
     try:
@@ -61,7 +59,10 @@ def get_authenticated_user(database: Session, token: Annotated[str, Depends(oaut
     return current_user
 
 
-def reset_password(database: Session,
-                   token: Annotated[str, Depends(oauth_scheme)],
+def reset_user_password(database: Session,
+                   token: str,
                    user_data: auth_schemas.PasswordUpdate):
-    pass
+    current_user = get_current_user(database, token)
+    current_user.password = pwd_context.hash(user_data.new_password)
+    database.commit()
+

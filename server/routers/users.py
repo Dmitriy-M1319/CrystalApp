@@ -4,8 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
+from ..auth.dependencies import get_current_user
 from ..exceptions import RowNotFoundException
-from ..dependencies import get_database_session
+from ..dependencies import *
 from ..schemas import user_schemas, extra_schemas
 from ..crud import user_crud
 
@@ -16,10 +17,22 @@ router = APIRouter(
 )
 
 
+@router.get('/me',
+            response_model=user_schemas.UserModel,
+            responses={
+                404: {'model': extra_schemas.Message},
+                400: {'model': extra_schemas.Message}
+            })
+def get_authenticated_user(db: Annotated[Session, Depends(get_database_session)],
+                           token: Annotated[str, Depends(get_token_from_header)]):
+    return get_current_user(db, token)
+
+
 @router.get('/{user_id}',
             response_model=user_schemas.UserModel,
+            dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
             responses={404: {'model': extra_schemas.Message}})
-def get_user(db: Annotated[Session, Depends(get_database_session)], user_id: int):
+def get_user_by_id(db: Annotated[Session, Depends(get_database_session)], user_id: int):
     try:
         return user_crud.get_user(db, user_id)
     except RowNotFoundException as e:
@@ -28,8 +41,9 @@ def get_user(db: Annotated[Session, Depends(get_database_session)], user_id: int
 
 @router.get('/{email}',
             response_model=user_schemas.UserModel,
+            dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
             responses={404: {'model': extra_schemas.Message}})
-def get_user(db: Annotated[Session, Depends(get_database_session)], email: str):
+def get_user_by_email(db: Annotated[Session, Depends(get_database_session)], email: str):
     try:
         return user_crud.get_user_by_email(db, email)
     except RowNotFoundException as e:
@@ -38,6 +52,7 @@ def get_user(db: Annotated[Session, Depends(get_database_session)], email: str):
 
 @router.put('/{user_id}',
             response_model=user_schemas.UserModel,
+            dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
             responses={
                 400: {'model': extra_schemas.Message},
                 404: {'model': extra_schemas.Message}})
@@ -53,6 +68,7 @@ def update_user(db: Annotated[Session, Depends(get_database_session)],
 
 @router.delete('/{user_id}',
                response_model=user_schemas.UserModel,
+               dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
                responses={404: {'model': extra_schemas.Message}})
 def remove_user(db: Annotated[Session, Depends(get_database_session)], user_id: int):
     try:

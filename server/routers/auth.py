@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 from sqlalchemy.exc import SQLAlchemyError
 
-from ..exceptions import RowNotFoundException
-from ..dependencies import get_database_session
+from ..dependencies import check_permissions, get_database_session, get_token_from_header
 from ..auth.dependencies import *
-from ..schemas import auth_schemas, user_schemas, extra_schemas
+from ..schemas import user_schemas, extra_schemas
 from ..crud import user_crud
+from ..exceptions import RowNotFoundException
 
 
 router = APIRouter(
@@ -22,6 +22,26 @@ def register_new_user(db: Annotated[Session, Depends(get_database_session)],
     try:
         new_user = user_crud.create_user(db, user)
         return new_user
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=400, detail=str(e.__dict__['orig']))
+
+
+@router.post('/reset_password',
+             dependencies=[Depends(check_permissions)],
+             response_model=extra_schemas.Success,
+             responses={
+                 400: {'model': extra_schemas.Message},
+                 401: {'model': extra_schemas.Message},
+                 404: {'model': extra_schemas.Message},
+             })
+def reset_password(db: Annotated[Session, Depends(get_database_session)],
+                   token: Annotated[str, Depends(get_token_from_header)],
+                   user_data: auth_schemas.PasswordUpdate):
+    try:
+        reset_user_password(db, token, user_data)
+        return {'success': True}
+    except RowNotFoundException as e:
+        raise HTTPException(status_code=404, detail=e.__str__)
     except SQLAlchemyError as e:
         raise HTTPException(status_code=400, detail=str(e.__dict__['orig']))
 
