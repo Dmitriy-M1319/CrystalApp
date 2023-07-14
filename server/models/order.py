@@ -8,7 +8,6 @@ class Order(Base):
     __tablename__ = 'orders'
 
     id = Column(Integer, primary_key=True, index=True)
-    promocode = Column(String)
     total_price = Column(Float)
     client_address = Column(String)
     is_delivery = Column(Boolean, default=False)

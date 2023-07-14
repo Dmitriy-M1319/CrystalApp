@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from .routers import products, users, auth, cart
+from .routers import products, users, auth, cart, orders
 from .db_engine import engine
 from .models import user, application, order, product
 
@@ -14,6 +14,7 @@ app.include_router(auth.router)
 app.include_router(products.router)
 app.include_router(users.router)
 app.include_router(cart.router)
+app.include_router(orders.router)
 
 
 @app.get('/')

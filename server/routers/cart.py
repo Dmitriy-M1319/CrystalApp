@@ -1,5 +1,3 @@
-#TODO: Сделать проверку на токен
-#TODO: Добавить немного документации по возвращаемым типам
 from typing import Annotated
 
 from fastapi import APIRouter, Response, Depends, Path
