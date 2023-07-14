@@ -16,6 +16,7 @@ def get_database_session():
         database.close()
 
 
+#TODO: Навесить обработку исключения неверного формата заголовка для токена
 def get_token_from_header(token: Annotated[str, Header(min_length=6)]):
     return token.split(':')[1].strip()
 

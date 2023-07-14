@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from ..exceptions import RowNotFoundException
 from ..schemas.cart_schemas import ProductCart
 from ..models.order import Order, OrderProduct
 from ..models.user import User
@@ -17,6 +18,13 @@ def get_active_orders_for_client(client: User):
     return get_orders_by_client(client).filter(Order.order_status).all()
 
 
+def _get_order_by_id(database: Session, order_id: int) -> Order:
+    order = database.query(Order).filter(Order.id == order_id).one()
+    if order is None:
+        raise RowNotFoundException('Order', str(order_id))
+    return order
+
+
 def get_closed_orders_for_client(client: User):
     return get_orders_by_client(client).filter(not Order.order_status).all()
 
@@ -24,10 +32,7 @@ def get_closed_orders_for_client(client: User):
 def create_order(database: Session, 
                  cart: ProductCart,
                  client: User,
-                 order_part: OrderCreate):
-    """
-    Throws Exception and SQLAlchemyError exceptions
-    """
+                 order_part: OrderCreate) -> Order:
     if len(cart.products) == 0:
         raise Exception('Cart is empty')
     new_order = Order(**order_part.dict())
@@ -37,20 +42,19 @@ def create_order(database: Session,
     database.commit()
     database.refresh(new_order)
 
-    for product in cart.products:
+    for product_count in cart.products:
         new_order_product = OrderProduct(order_id=new_order.id, 
-                                         product_id=product.id,
-                                         product_count=cart.products[product])
+                                         product_id=product_count[0].id,
+                                         product_count=product_count[1])
         database.add(new_order_product)
         database.commit()
 
     return new_order
 
 
-
 def close_order(database: Session,
-                order_id: int):
-    order = database.query(Order).filter(Order.id == order_id).one()
+                order_id: int) -> Order:
+    order = _get_order_by_id(database, order_id)
     order.order_status = False
     database.commit()
     return order

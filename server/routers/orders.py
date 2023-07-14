@@ -1,3 +1,5 @@
+#TODO: Навесить обработку исключений
+#TODO: Проверить, почему не показываются продукты в order_products
 from enum import Enum
 from typing import Annotated
 
@@ -28,7 +30,6 @@ class OrdersFilter(str, Enum):
 
 
 @router.get('/',
-            response_model=list[OrderGetForClient],
             responses={400: {'model': Message}})
 def get_filtered_orders(db: Annotated[Session, Depends(get_database_session)],
                                    token: Annotated[str, Depends(get_token_from_header)],
@@ -37,7 +38,10 @@ def get_filtered_orders(db: Annotated[Session, Depends(get_database_session)],
         curr_user = get_current_user(db, token)
         match ord_filter:
             case OrdersFilter.orders_all:
-                return order_crud.get_orders_by_client(curr_user)
+                if curr_user.is_admin:
+                    return order_crud.get_all_orders(db)
+                else:
+                    return order_crud.get_orders_by_client(curr_user)
             case OrdersFilter.orders_active:
                 return order_crud.get_active_orders_for_client(curr_user)
             case OrdersFilter.orders_closed:
@@ -47,7 +51,6 @@ def get_filtered_orders(db: Annotated[Session, Depends(get_database_session)],
 
 
 @router.post('/',
-             response_model=OrderGetForClient,
              dependencies=[Depends(cookie)])
 def create_order(db: Annotated[Session, Depends(get_database_session)],
                  token: Annotated[str, Depends(get_token_from_header)],
@@ -63,13 +66,12 @@ def create_order(db: Annotated[Session, Depends(get_database_session)],
 
 
 @router.delete('/{order_id}',
-               response_model=Message,
+               response_model=OrderGetForAdmin,
                dependencies=[Depends(check_permissions), Depends(check_admin_permissions)])
 def close_order(db: Annotated[Session, Depends(get_database_session)],
                 order_id: int):
     try:
-        order_crud.close_order(db, order_id)
-        return {'success': True}
+        return order_crud.close_order(db, order_id)
     except SQLAlchemyError as sql_error:
         raise HTTPException(status_code=400, detail=str(sql_error.__dict__['orig']))
     
