@@ -6,7 +6,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from ..services.order_services import reformat_orders_from_db
-from ..exceptions import RowNotFoundException
 from ..schemas.cart_schemas import ProductCart
 from ..schemas.order_schemas import *
 from ..schemas.extra_schemas import *
@@ -62,23 +61,4 @@ def create_order(db: Annotated[Session, Depends(get_database_session)],
         raise HTTPException(status_code=400, detail=str(sql_error.__dict__['orig']))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
-@router.delete('/{order_id}',
-               responses={
-                   400: {'model': Message},
-                   401: {'model': Message},
-                   404: {'model': Message},
-                },
-               response_model=OrderGetForAdmin,
-               dependencies=[Depends(check_permissions), Depends(check_admin_permissions)])
-def close_order(db: Annotated[Session, Depends(get_database_session)],
-                order_id: int):
-    try:
-        return order_crud.close_order(db, order_id)
-    except RowNotFoundException as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except SQLAlchemyError as sql_error:
-        raise HTTPException(status_code=400, detail=str(sql_error.__dict__['orig']))
-    
 

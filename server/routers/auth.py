@@ -1,3 +1,5 @@
+#TODO: Сделать валидацию на все ключи и некоторые поля
+
 from fastapi import APIRouter
 from sqlalchemy.exc import SQLAlchemyError
 

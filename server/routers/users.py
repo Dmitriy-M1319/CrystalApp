@@ -1,10 +1,8 @@
-from typing import Annotated
+#TODO: Сделать валидацию на все ключи и некоторые поля
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter
 from sqlalchemy.exc import SQLAlchemyError
 
-from ..auth.dependencies import get_current_user
 from ..exceptions import RowNotFoundException
 from ..dependencies import *
 from ..schemas import user_schemas, extra_schemas

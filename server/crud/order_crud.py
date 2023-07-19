@@ -20,10 +20,11 @@ def get_active_orders_for_client(client: User):
 
 
 def _get_order_by_id(database: Session, order_id: int) -> Order:
-    order = database.query(Order).filter(Order.id == order_id).one()
+    order = database.query(Order).filter(Order.id == order_id).first()
     if order is None:
         raise RowNotFoundException('Order', str(order_id))
-    return order
+    else:
+        return order
 
 
 def get_closed_orders_for_client(client: User):
