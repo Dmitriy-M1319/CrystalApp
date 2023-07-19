@@ -14,3 +14,4 @@ class ProductGetModel(ProductCreateOrUpdateModel):
 
     class Config:
         orm_mode = True
+

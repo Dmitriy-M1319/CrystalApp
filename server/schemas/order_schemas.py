@@ -10,11 +10,16 @@ class OrderCreate(BaseModel):
     payment_type: str
 
 
+class OrderProduct(BaseModel):
+    product: ProductGetModel
+    count: int
+
+
 class OrderGetForClient(OrderCreate):
     id: int
     total_price: float
     order_status: bool = True
-    order_products: list[ProductGetModel]
+    orders_products: list[OrderProduct]
 
     class Config:
         orm_mode = True

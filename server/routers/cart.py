@@ -1,20 +1,22 @@
-#TODO: Навесить обработку исключений
 from typing import Annotated
 
 from fastapi import APIRouter, Response, Depends, Path
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from ..exceptions import RowNotFoundException
 from ..dependencies import *
 from ..schemas.cart_schemas import ProductCart
 from ..session.sessions import *
 from ..crud import cart_crud
 from ..schemas.extra_schemas import *
 
+
 router = APIRouter(
     prefix='/cart',
     tags=['cart']
 )
+
 
 class AddProduct(BaseModel):
     product_id: int
@@ -44,7 +46,13 @@ async def add_product_to_cart(session_id: Annotated[UUID, Depends(cookie)],
                               cart: Annotated[ProductCart, Depends(verifier)],
                               db: Annotated[Session, Depends(get_database_session)],
                               product: AddProduct):
-    return await cart_crud.add_product_to_cart(db, cart, session_id, product.product_id, product.count_for_order)
+    try:
+        return await cart_crud.add_product_to_cart(db, \
+            cart, session_id, product.product_id, product.count_for_order)
+    except RowNotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.delete('/remove_product/{product_id}', response_model=ProductCart, 
@@ -54,7 +62,10 @@ async def add_product_to_cart(session_id: Annotated[UUID, Depends(cookie)],
 async def remove_product_from_cart(product_id: Annotated[int, Path(ge=1)], 
                               session_id: Annotated[UUID, Depends(cookie)],
                               cart: Annotated[ProductCart, Depends(verifier)]):
-    return await cart_crud.remove_product_from_cart(cart, session_id, product_id)
+    try:
+        return await cart_crud.remove_product_from_cart(cart, session_id, product_id)
+    except RowNotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.delete('/', 

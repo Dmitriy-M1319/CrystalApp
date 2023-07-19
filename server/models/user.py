@@ -15,4 +15,4 @@ class User(Base):
     password = Column(String)
     is_admin = Column(Boolean, default=False)
 
-    orders = relationship('Order', back_populates='client')
+    orders = relationship('Order', back_populates='client', lazy='dynamic')
