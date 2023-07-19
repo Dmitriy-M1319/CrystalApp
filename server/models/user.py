@@ -16,3 +16,4 @@ class User(Base):
     is_admin = Column(Boolean, default=False)
 
     orders = relationship('Order', back_populates='client', lazy='dynamic')
+

@@ -14,8 +14,9 @@ def get_orders_by_client(client: User):
 def get_all_orders(database: Session):
     return database.query(Order).all()
 
+
 def get_active_orders_for_client(client: User):
-    return client.orders.filter(Order.order_status.is_(True)).all()
+    return get_orders_by_client(client).filter(Order.order_status.is_(True)).all()
 
 
 def _get_order_by_id(database: Session, order_id: int) -> Order:
@@ -58,3 +59,4 @@ def close_order(database: Session,
     order.order_status = False
     database.commit()
     return order
+

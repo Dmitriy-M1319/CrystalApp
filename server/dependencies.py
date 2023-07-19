@@ -16,9 +16,11 @@ def get_database_session():
         database.close()
 
 
-#TODO: Навесить обработку исключения неверного формата заголовка для токена
 def get_token_from_header(token: Annotated[str, Header(min_length=6)]):
-    return token.split(':')[1].strip()
+    try:
+        return token.split(':')[1].strip()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid token format")
 
 
 def check_permissions(db: Annotated[Session, Depends(get_database_session)],
@@ -35,7 +37,3 @@ def check_admin_permissions(user: Annotated[User, Depends(check_permissions)]):
         raise HTTPException(status_code=401, detail="Non authorizated")
     return user
    
-
-
-
-

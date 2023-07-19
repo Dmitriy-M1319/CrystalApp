@@ -1,4 +1,3 @@
-#TODO: Проверить, почему не показываются продукты в order_products
 from enum import Enum
 from typing import Annotated
 
@@ -30,20 +29,16 @@ class OrdersFilter(str, Enum):
 
 
 @router.get('/',
-            response_model=list[OrderGetForClient],
             responses={400: {'model': Message}})
 def get_filtered_orders(db: Annotated[Session, Depends(get_database_session)],
                                    token: Annotated[str, Depends(get_token_from_header)],
-                                   ord_filter: Annotated[OrdersFilter, Query()]):
+                                   ord_filter: Annotated[OrdersFilter, Query()]) -> list[OrderGetForClient]:
     try:
         curr_user = get_current_user(db, token)
         result = []
         match ord_filter:
             case OrdersFilter.orders_all:
-                if curr_user.is_admin:
-                    result = order_crud.get_all_orders(db)
-                else:
-                    result = order_crud.get_orders_by_client(curr_user)
+                result = order_crud.get_orders_by_client(curr_user)
             case OrdersFilter.orders_active:
                 result = order_crud.get_active_orders_for_client(curr_user)
             case OrdersFilter.orders_closed:
