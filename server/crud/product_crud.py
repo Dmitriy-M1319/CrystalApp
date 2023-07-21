@@ -29,6 +29,22 @@ def create_product(database: Session, product: ProductCreateOrUpdateModel):
     return new_product
 
 
+def add_new_product_count(database, Session, 
+                          product_id: int, product_count: int):
+    product = get_product(database, product_id)
+    product.count_on_warehouse += product_count
+    database.commit()
+
+
+def remove_products_from_warehouse(database: Session,
+                                   product_id: int, product_count: int):
+    product = get_product(database, product_id)
+    if product_count > product.count_on_warehouse:
+        raise ValueError('Failed to remove products from warehouse: too many removed products')
+    product.count_on_warehouse -= product_count
+    database.commit()
+
+
 def update_product(database: Session,
                    product_id: int,
                    product_data: ProductCreateOrUpdateModel):

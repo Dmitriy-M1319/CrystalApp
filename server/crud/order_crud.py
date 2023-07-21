@@ -5,6 +5,7 @@ from ..schemas.cart_schemas import ProductCart
 from ..models.order import Order, OrderProduct
 from ..models.user import User
 from ..schemas.order_schemas import *
+from .product_crud import remove_products_from_warehouse
 
 
 def get_orders_by_client(client: User):
@@ -59,5 +60,7 @@ def close_order(database: Session,
     order = _get_order_by_id(database, order_id)
     order.order_status = False
     database.commit()
+    for product in order.orders_products:
+        remove_products_from_warehouse(database, product.product_id, product.product_count)
     return order
 

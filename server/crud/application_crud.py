@@ -1,11 +1,9 @@
-#TODO: Сделать логику добавления товара на склад после закрытия заявки
-
 from sqlalchemy.orm import Session
 
 from ..models.application import ProductApplication
 from ..schemas.application_schemas import *
 from ..exceptions import RowNotFoundException
-from .product_crud import get_product
+from .product_crud import get_product, add_new_product_count
 
 
 def get_all_applications(database: Session):
@@ -35,4 +33,5 @@ def close_application(database: Session, app_id: int) -> ProductApplication:
     app = get_application(database, app_id)
     app.app_status = False
     database.commit()
+    add_new_product_count(database, app.product_id, app.count) 
     return app
