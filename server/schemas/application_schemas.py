@@ -1,12 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .product_schemas import ProductGetModel
 
 
 class ProductApplicationCreate(BaseModel):
-    count: int
+    count: int = Field(gt=0)
     provider: str
-    product_id: int
+    product_id: int = Field(gt=0)
 
 
 class ProductApplicationGet(ProductApplicationCreate):

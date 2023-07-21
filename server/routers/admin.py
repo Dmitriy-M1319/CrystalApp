@@ -1,6 +1,4 @@
-#TODO: Сделать валидацию на все ключи и некоторые поля
-
-from fastapi import APIRouter
+from fastapi import APIRouter, Path
 from sqlalchemy.exc import SQLAlchemyError
 
 from ..crud import application_crud
@@ -42,7 +40,7 @@ def get_orders_for_admin(db: Annotated[Session, Depends(get_database_session)]):
                response_model=OrderGetForAdmin,
                dependencies=[Depends(check_permissions), Depends(check_admin_permissions)])
 def close_order(db: Annotated[Session, Depends(get_database_session)],
-                order_id: int):
+                order_id: Annotated[int, Path(gt=0)]):
     try:
         return reformat_order(db, order_crud.close_order(db, order_id))
     except RowNotFoundException as e:
@@ -70,7 +68,7 @@ def get_applications(db: Annotated[Session, Depends(get_database_session)]) -> l
                 },
             dependencies=[Depends(check_permissions), Depends(check_admin_permissions)])
 def get_application_by_id(db: Annotated[Session, Depends(get_database_session)],
-                           application_id: int):
+                           application_id: Annotated[int, Path(gt=0)]):
     try:
         return reformat_app(db, application_crud.get_application(db, application_id))
     except RowNotFoundException as e:
@@ -106,7 +104,7 @@ def create_new_application(db: Annotated[Session, Depends(get_database_session)]
                 },
             dependencies=[Depends(check_permissions), Depends(check_admin_permissions)])
 def close_application(db: Annotated[Session, Depends(get_database_session)],
-                           application_id: int):
+                           application_id: Annotated[int, Path(gt=0)]):
     try:
         return reformat_app(db, application_crud.close_application(db, application_id))
     except RowNotFoundException as e:

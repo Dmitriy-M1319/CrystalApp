@@ -1,6 +1,5 @@
-#TODO: Сделать валидацию на все ключи и некоторые поля
-
-from fastapi import APIRouter
+from fastapi import APIRouter, Path, Query
+from pydantic import EmailStr
 from sqlalchemy.exc import SQLAlchemyError
 
 from ..exceptions import RowNotFoundException
@@ -30,7 +29,8 @@ def get_authenticated_user(db: Annotated[Session, Depends(get_database_session)]
             response_model=user_schemas.UserModel,
             dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
             responses={404: {'model': extra_schemas.Message}})
-def get_user_by_id(db: Annotated[Session, Depends(get_database_session)], user_id: int):
+def get_user_by_id(db: Annotated[Session, Depends(get_database_session)], 
+                   user_id: Annotated[int, Path(gt=0)]):
     try:
         return user_crud.get_user(db, user_id)
     except RowNotFoundException as e:
@@ -41,7 +41,8 @@ def get_user_by_id(db: Annotated[Session, Depends(get_database_session)], user_i
             response_model=user_schemas.UserModel,
             dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
             responses={404: {'model': extra_schemas.Message}})
-def get_user_by_email(db: Annotated[Session, Depends(get_database_session)], email: str):
+def get_user_by_email(db: Annotated[Session, Depends(get_database_session)], 
+                      email: EmailStr):
     try:
         return user_crud.get_user_by_email(db, email)
     except RowNotFoundException as e:
@@ -55,7 +56,8 @@ def get_user_by_email(db: Annotated[Session, Depends(get_database_session)], ema
                 400: {'model': extra_schemas.Message},
                 404: {'model': extra_schemas.Message}})
 def update_user(db: Annotated[Session, Depends(get_database_session)],
-                user_id: int, user: user_schemas.UserUpdate):
+                user_id: Annotated[int, Path(gt=0)], 
+                user: user_schemas.UserUpdate):
     try:
         return user_crud.update_user(db, user_id, user)
     except RowNotFoundException as e:
@@ -68,7 +70,8 @@ def update_user(db: Annotated[Session, Depends(get_database_session)],
                response_model=user_schemas.UserModel,
                dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
                responses={404: {'model': extra_schemas.Message}})
-def remove_user(db: Annotated[Session, Depends(get_database_session)], user_id: int):
+def remove_user(db: Annotated[Session, Depends(get_database_session)], 
+                user_id: Annotated[int, Path(gt=0)]):
     try:
         return user_crud.delete_user(db, user_id)
     except RowNotFoundException as e:

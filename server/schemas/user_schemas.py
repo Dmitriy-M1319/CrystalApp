@@ -1,10 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class UserCreate(BaseModel):
     surname: str
     name: str
-    email: str
+    email: EmailStr
     phone_number: str | None
     password: str
     is_admin: bool
@@ -20,5 +20,5 @@ class UserModel(UserCreate):
 class UserUpdate(BaseModel):
     surname: str
     name: str
-    email: str
+    email: EmailStr
     phone_number: str | None

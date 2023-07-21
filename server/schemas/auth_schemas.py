@@ -1,6 +1,6 @@
 import re
 
-from pydantic import BaseModel, ValidationError, validator
+from pydantic import BaseModel, EmailStr, ValidationError, validator
 
 
 _password_regex: str = r'^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d).*$'
@@ -11,7 +11,7 @@ class Token(BaseModel):
 
 
 class AuthenticateUserData(BaseModel):
-    email: str
+    email: EmailStr
     password: str
 
 

@@ -1,6 +1,4 @@
-#TODO: Сделать валидацию на все ключи и некоторые поля
-
-from fastapi import APIRouter
+from fastapi import APIRouter, Path
 from sqlalchemy.exc import SQLAlchemyError
 
 from ..exceptions import RowNotFoundException
@@ -25,7 +23,7 @@ def get_product_catalog(db: Annotated[Session, Depends(get_database_session)],
             response_model=product_schemas.ProductGetModel,
             responses={404: {'model': extra_schemas.Message}})
 def get_product_by_id(db: Annotated[Session, Depends(get_database_session)],
-                      product_id: int):
+                      product_id: Annotated[int, Path(gt=0)]):
     try:
         return product_crud.get_product(db, product_id)
     except RowNotFoundException as e:
@@ -48,7 +46,8 @@ def create_product(db: Annotated[Session, Depends(get_database_session)],
             responses={404: {'model': extra_schemas.Message},
                        400: {'model': extra_schemas.Message}})
 def update_product(db: Annotated[Session, Depends(get_database_session)],
-                   product_id: int, product_data: product_schemas.ProductCreateOrUpdateModel):
+                   product_id: Annotated[int, Path(gt=0)], 
+                   product_data: product_schemas.ProductCreateOrUpdateModel):
     try:
         return product_crud.update_product(db, product_id, product_data)
     except RowNotFoundException as e:
@@ -61,7 +60,7 @@ def update_product(db: Annotated[Session, Depends(get_database_session)],
                dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
                responses={404: {'model': extra_schemas.Message}})
 def remove_product(db: Annotated[Session, Depends(get_database_session)],
-                   product_id: int):
+                   product_id: Annotated[int, Path(gt=0)]):
     try:
         return product_crud.delete_product(db, product_id)
     except RowNotFoundException as e:

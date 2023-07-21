@@ -1,6 +1,5 @@
-#TODO: Сделать валидацию на все ключи и некоторые поля
-
 from fastapi import APIRouter, Response, Depends, Path
+from pydantic import Field
 
 from ..exceptions import RowNotFoundException
 from ..dependencies import *
@@ -17,15 +16,15 @@ router = APIRouter(
 
 
 class AddProduct(BaseModel):
-    product_id: int
-    count_for_order: int
+    product_id: int = Field(gt=0)
+    count_for_order: int = Field(gt=0)
 
 
 @router.post('/',
              responses={401: {'model': Message}},
              dependencies=[Depends(check_permissions)])
 async def create_session_cart(cart: ProductCart, response: Response):
-   return await cart_crud.create_session_cart(cart, response)
+    return await cart_crud.create_session_cart(cart, response)
 
 
 @router.get('/', response_model=ProductCart,
