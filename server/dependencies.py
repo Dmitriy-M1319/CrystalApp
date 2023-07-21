@@ -16,7 +16,8 @@ def get_database_session():
         database.close()
 
 
-def get_token_from_header(token: Annotated[str, Header(min_length=6)]):
+def get_token_from_header(token: Annotated[str, Header(min_length=6,
+                                                       description='JWT-токен в формате \"Token: jwt-token\"')]):
     try:
         return token.split(':')[1].strip()
     except Exception:

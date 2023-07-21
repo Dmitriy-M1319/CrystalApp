@@ -18,8 +18,3 @@ app.include_router(cart.router)
 app.include_router(orders.router)
 
 
-@app.get('/')
-async def index():
-    return {'success': True}
-
-

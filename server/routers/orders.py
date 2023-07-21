@@ -31,7 +31,8 @@ class OrdersFilter(str, Enum):
             responses={400: {'model': Message}})
 def get_filtered_orders(db: Annotated[Session, Depends(get_database_session)],
                                    token: Annotated[str, Depends(get_token_from_header)],
-                                   ord_filter: Annotated[OrdersFilter, Query()]) -> list[OrderGetForClient]:
+                                   ord_filter: Annotated[OrdersFilter, Query(description='Фильтр для выборки')]) -> list[OrderGetForClient]:
+    '''Получить заказы пользователя с возможной фильтрацией (все, активные, завершенные)'''
     try:
         curr_user = get_current_user(db, token)
         result = []
@@ -54,6 +55,7 @@ def create_order(db: Annotated[Session, Depends(get_database_session)],
                  token: Annotated[str, Depends(get_token_from_header)],
                  cart: Annotated[ProductCart, Depends(verifier)],
                  order_data: OrderCreate):
+    '''Создать новый заказ для пользователя на основе его корзины'''
     try:
         curr_user = get_current_user(db, token)
         return order_crud.create_order(db, cart, curr_user, order_data)

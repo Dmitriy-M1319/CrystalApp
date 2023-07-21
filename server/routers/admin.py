@@ -28,6 +28,8 @@ router = APIRouter(
                 },
             dependencies=[Depends(check_permissions), Depends(check_admin_permissions)])
 def get_orders_for_admin(db: Annotated[Session, Depends(get_database_session)]):
+    '''Получить все заказы в системе (активные и закрытые)\n
+    Доступно только администратору'''
     return reformat_orders_from_db(db, order_crud.get_all_orders(db))
 
 
@@ -40,7 +42,9 @@ def get_orders_for_admin(db: Annotated[Session, Depends(get_database_session)]):
                response_model=OrderGetForAdmin,
                dependencies=[Depends(check_permissions), Depends(check_admin_permissions)])
 def close_order(db: Annotated[Session, Depends(get_database_session)],
-                order_id: Annotated[int, Path(gt=0)]):
+                order_id: Annotated[int, Path(gt=0, description='ID заказа')]):
+    '''Закрыть заказ по его идентификатору\n
+    Доступно только администратору'''
     try:
         return reformat_order(db, order_crud.close_order(db, order_id))
     except RowNotFoundException as e:
@@ -56,7 +60,9 @@ def close_order(db: Annotated[Session, Depends(get_database_session)],
                 },
             dependencies=[Depends(check_permissions), Depends(check_admin_permissions)])
 def get_applications(db: Annotated[Session, Depends(get_database_session)]) -> list[ProductApplicationGet]:
-     return reformat_applications(db, application_crud.get_all_applications(db))
+    '''Получить все заявки на поставку товаров в системе (открытые и закрытые)\n
+    Доступно только администратору'''
+    return reformat_applications(db, application_crud.get_all_applications(db))
 
 
 @router.get('/applications/{application_id}',
@@ -68,7 +74,9 @@ def get_applications(db: Annotated[Session, Depends(get_database_session)]) -> l
                 },
             dependencies=[Depends(check_permissions), Depends(check_admin_permissions)])
 def get_application_by_id(db: Annotated[Session, Depends(get_database_session)],
-                           application_id: Annotated[int, Path(gt=0)]):
+                           application_id: Annotated[int, Path(gt=0, description='ID заявки')]):
+    '''Получить заявку на поставку товара по ее идентификатору\n
+    Доступно только администратору'''
     try:
         return reformat_app(db, application_crud.get_application(db, application_id))
     except RowNotFoundException as e:
@@ -87,6 +95,8 @@ def get_application_by_id(db: Annotated[Session, Depends(get_database_session)],
             dependencies=[Depends(check_permissions), Depends(check_admin_permissions)])
 def create_new_application(db: Annotated[Session, Depends(get_database_session)],
                            application_part: ProductApplicationCreate):
+    '''Создать новую заявку на поставку определенного товара на склад\n
+    Доступно только администратору'''
     try:
         return reformat_app(db, application_crud.create_application(db, application_part))
     except RowNotFoundException as e:
@@ -104,7 +114,9 @@ def create_new_application(db: Annotated[Session, Depends(get_database_session)]
                 },
             dependencies=[Depends(check_permissions), Depends(check_admin_permissions)])
 def close_application(db: Annotated[Session, Depends(get_database_session)],
-                           application_id: Annotated[int, Path(gt=0)]):
+                           application_id: Annotated[int, Path(gt=0, description='ID заявки')]):
+    '''Закрыть заявку на поставку товара по ее идентификатору\n
+    Доступно только администратору'''
     try:
         return reformat_app(db, application_crud.close_application(db, application_id))
     except RowNotFoundException as e:

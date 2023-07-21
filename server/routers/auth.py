@@ -19,6 +19,7 @@ router = APIRouter(
              responses={400: {'model': extra_schemas.Message}})
 def register_new_user(db: Annotated[Session, Depends(get_database_session)],
                       user: Annotated[user_schemas.UserCreate, Depends(hash_user_password)]):
+    '''Зарегистрироваться новому пользователю в системе'''
     try:
         new_user = user_crud.create_user(db, user)
         return new_user
@@ -37,6 +38,7 @@ def register_new_user(db: Annotated[Session, Depends(get_database_session)],
 def reset_password(db: Annotated[Session, Depends(get_database_session)],
                    token: Annotated[str, Depends(get_token_from_header)],
                    user_data: auth_schemas.PasswordUpdate):
+    '''Сбросить пароль и поменять его на новый зарегистрированному пользователю'''
     try:
         reset_user_password(db, token, user_data)
         return {'success': True}
@@ -55,6 +57,7 @@ def reset_password(db: Annotated[Session, Depends(get_database_session)],
              })
 def login_user_for_token(db: Annotated[Session, Depends(get_database_session)],
                          user: auth_schemas.AuthenticateUserData):
+    '''Авторизоваться в приложении (получить JWT-токен для авторизации пользователя при выполнении действий)'''
     try:
         authenticated_user = authenticate(db, user)
         new_token = generate_token({'sub': authenticated_user.email})
@@ -63,3 +66,4 @@ def login_user_for_token(db: Annotated[Session, Depends(get_database_session)],
         raise HTTPException(status_code=404, detail=e.__str__)
     except SQLAlchemyError as e:
         raise HTTPException(status_code=400, detail=str(e.__dict__['orig']))
+

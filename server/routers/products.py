@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Path
+from fastapi import APIRouter, Path, Query
 from sqlalchemy.exc import SQLAlchemyError
 
 from ..exceptions import RowNotFoundException
@@ -15,7 +15,9 @@ router = APIRouter(
 
 @router.get('/', response_model=list[product_schemas.ProductGetModel])
 def get_product_catalog(db: Annotated[Session, Depends(get_database_session)],
-                        company_filter: str | None = None):
+                        company_filter: Annotated[str | None, 
+                                                  Query(description='Компания, товар от которой будет предоставлен')] = None):
+    '''Получить весь каталог с товаром'''
     return product_crud.get_products(db, company_filter)
 
 
@@ -23,7 +25,8 @@ def get_product_catalog(db: Annotated[Session, Depends(get_database_session)],
             response_model=product_schemas.ProductGetModel,
             responses={404: {'model': extra_schemas.Message}})
 def get_product_by_id(db: Annotated[Session, Depends(get_database_session)],
-                      product_id: Annotated[int, Path(gt=0)]):
+                      product_id: Annotated[int, Path(gt=0, description='ID товара')]):
+    '''Получить товар по его идентификатору'''
     try:
         return product_crud.get_product(db, product_id)
     except RowNotFoundException as e:
@@ -32,9 +35,14 @@ def get_product_by_id(db: Annotated[Session, Depends(get_database_session)],
 
 @router.post('/', response_model=product_schemas.ProductGetModel,
              dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
-             responses={400: {'model': extra_schemas.Message}})
+             responses={
+                 400: {'model': extra_schemas.Message},
+                 401: {'model': extra_schemas.Message},
+                 })
 def create_product(db: Annotated[Session, Depends(get_database_session)],
                    product: product_schemas.ProductCreateOrUpdateModel):
+    '''Создать новый товар на складе\n
+    Доступно только для администратора'''
     try:
         return product_crud.create_product(db, product)
     except SQLAlchemyError as sql_error:
@@ -44,10 +52,13 @@ def create_product(db: Annotated[Session, Depends(get_database_session)],
 @router.put('/{product_id}', response_model=product_schemas.ProductGetModel,
             dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
             responses={404: {'model': extra_schemas.Message},
+                       401: {'model': extra_schemas.Message},
                        400: {'model': extra_schemas.Message}})
 def update_product(db: Annotated[Session, Depends(get_database_session)],
-                   product_id: Annotated[int, Path(gt=0)], 
+                   product_id: Annotated[int, Path(gt=0, description='ID товара')], 
                    product_data: product_schemas.ProductCreateOrUpdateModel):
+    '''Обновить данные о товаре на складе по его идентификатору\n
+    Доступно только для администратора'''
     try:
         return product_crud.update_product(db, product_id, product_data)
     except RowNotFoundException as e:
@@ -58,9 +69,13 @@ def update_product(db: Annotated[Session, Depends(get_database_session)],
 
 @router.delete('/{product_id}', response_model=None,
                dependencies=[Depends(check_permissions), Depends(check_admin_permissions)],
-               responses={404: {'model': extra_schemas.Message}})
+               responses={
+                   404: {'model': extra_schemas.Message},
+                   401: {'model': extra_schemas.Message}
+                   })
 def remove_product(db: Annotated[Session, Depends(get_database_session)],
-                   product_id: Annotated[int, Path(gt=0)]):
+                   product_id: Annotated[int, Path(gt=0, description='ID товара')]):
+    '''Удалить запись о товаре по ее идентификатору'''
     try:
         return product_crud.delete_product(db, product_id)
     except RowNotFoundException as e:
