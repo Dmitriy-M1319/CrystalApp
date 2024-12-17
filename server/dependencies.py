@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import Header, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from .models.user import User
-from .db_engine import SessionLocal
-from .auth.dependencies import get_current_user
+from models.user import User
+from db_engine import SessionLocal
+from auth.dependencies import get_current_user
 
 
 def get_database_session():

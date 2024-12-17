@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from ..models.product import Product
-from ..schemas.product_schemas import ProductCreateOrUpdateModel
-from ..exceptions import RowNotFoundException
+from models.product import Product
+from schemas.product_schemas import ProductCreateOrUpdateModel
+from exceptions import RowNotFoundException
 
 
 def get_products(database: Session, company_filter: str | None = None):

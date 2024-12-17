@@ -2,10 +2,10 @@ from fastapi import APIRouter, Path
 from pydantic import EmailStr
 from sqlalchemy.exc import SQLAlchemyError
 
-from ..exceptions import RowNotFoundException
-from ..dependencies import *
-from ..schemas import user_schemas, extra_schemas
-from ..crud import user_crud
+from exceptions import RowNotFoundException
+from dependencies import *
+from schemas import user_schemas, extra_schemas
+from crud import user_crud
 
 
 router = APIRouter(

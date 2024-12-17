@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from ..crud.product_crud import get_product
-from ..models.application import ProductApplication
+from crud.product_crud import get_product
+from models.application import ProductApplication
 
 
 def reformat_app(database: Session, app: ProductApplication):

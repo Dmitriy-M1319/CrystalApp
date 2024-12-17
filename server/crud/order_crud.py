@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 
-from ..exceptions import RowNotFoundException
-from ..schemas.cart_schemas import ProductCart
-from ..models.order import Order, OrderProduct
-from ..models.user import User
-from ..schemas.order_schemas import *
+from exceptions import RowNotFoundException
+from schemas.cart_schemas import ProductCart
+from models.order import Order, OrderProduct
+from models.user import User
+from schemas.order_schemas import *
 from .product_crud import remove_products_from_warehouse
 
 

@@ -1,17 +1,17 @@
 from fastapi import APIRouter, Path
 from sqlalchemy.exc import SQLAlchemyError
 
-from ..crud import application_crud
-from ..schemas.application_schemas import ProductApplicationCreate, \
+from crud import application_crud
+from schemas.application_schemas import ProductApplicationCreate, \
     ProductApplicationGet
-from ..services.order_services import reformat_orders_from_db, \
+from services.order_services import reformat_orders_from_db, \
         reformat_order
-from ..services.application_services import *
-from ..schemas.order_schemas import *
-from ..schemas.extra_schemas import *
-from ..exceptions import RowNotFoundException
-from ..crud import order_crud
-from ..dependencies import *
+from services.application_services import *
+from schemas.order_schemas import *
+from schemas.extra_schemas import *
+from exceptions import RowNotFoundException
+from crud import order_crud
+from dependencies import *
 
 
 router = APIRouter(

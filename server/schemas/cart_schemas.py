@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from ..schemas.product_schemas import ProductGetModel
+from schemas.product_schemas import ProductGetModel
 
 
 class ProductCart(BaseModel):

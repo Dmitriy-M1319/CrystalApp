@@ -2,9 +2,9 @@ from typing import Type
 
 from sqlalchemy.orm import Session
 
-from ..models.user import User
-from ..schemas import user_schemas
-from ..exceptions import RowNotFoundException
+from models.user import User
+from schemas import user_schemas
+from exceptions import RowNotFoundException
 
 
 def get_user(database: Session, user_id: int) -> Type[User]:

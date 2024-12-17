@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from ..models.application import ProductApplication
-from ..schemas.application_schemas import *
-from ..exceptions import RowNotFoundException
+from models.application import ProductApplication
+from schemas.application_schemas import *
+from exceptions import RowNotFoundException
 from .product_crud import get_product, add_new_product_count
 
 

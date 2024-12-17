@@ -4,10 +4,10 @@ from fastapi import Response
 from sqlalchemy.orm import Session
 from pydantic import parse_obj_as
 
-from ..exceptions import RowNotFoundException
-from ..schemas.product_schemas import ProductGetModel
-from ..session.sessions import *
-from ..schemas.cart_schemas import ProductCart
+from exceptions import RowNotFoundException
+from schemas.product_schemas import ProductGetModel
+from session.sessions import *
+from schemas.cart_schemas import ProductCart
 from .product_crud import get_product
 
 

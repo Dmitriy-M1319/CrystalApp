@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Response, Depends, Path
 from pydantic import Field
 
-from ..exceptions import RowNotFoundException
-from ..dependencies import *
-from ..schemas.cart_schemas import ProductCart
-from ..session.sessions import *
-from ..crud import cart_crud
-from ..schemas.extra_schemas import *
+from exceptions import RowNotFoundException
+from dependencies import *
+from schemas.cart_schemas import ProductCart
+from session.sessions import *
+from crud import cart_crud
+from schemas.extra_schemas import *
 
 
 router = APIRouter(

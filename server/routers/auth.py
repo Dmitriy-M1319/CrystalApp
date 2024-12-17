@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 from sqlalchemy.exc import SQLAlchemyError
 
-from ..dependencies import check_permissions, get_database_session, get_token_from_header
-from ..auth.dependencies import *
-from ..schemas import user_schemas, extra_schemas
-from ..crud import user_crud
-from ..exceptions import RowNotFoundException
+from dependencies import check_permissions, get_database_session, get_token_from_header
+from auth.dependencies import *
+from schemas import user_schemas, extra_schemas
+from crud import user_crud
+from exceptions import RowNotFoundException
 
 
 router = APIRouter(

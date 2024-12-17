@@ -6,10 +6,10 @@ from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException
 from jose import jwt, JWTError
 
-from ..crud import user_crud
-from ..schemas import auth_schemas
-from ..models.user import User
-from ..schemas.user_schemas import UserCreate
+from crud import user_crud
+from schemas import auth_schemas
+from models.user import User
+from schemas.user_schemas import UserCreate
 from .settings import *
 
 

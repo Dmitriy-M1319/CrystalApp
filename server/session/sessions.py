@@ -5,7 +5,7 @@ from fastapi_sessions.frontends.implementations import SessionCookie, CookiePara
 from fastapi_sessions.backends.implementations import InMemoryBackend
 from fastapi_sessions.session_verifier import SessionVerifier
 
-from ..schemas.cart_schemas import ProductCart
+from schemas.cart_schemas import ProductCart
 
 
 # session front

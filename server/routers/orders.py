@@ -5,14 +5,14 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from ..services.order_services import reformat_orders_from_db
-from ..schemas.cart_schemas import ProductCart
-from ..schemas.order_schemas import *
-from ..schemas.extra_schemas import *
-from ..crud import order_crud
-from ..auth.dependencies import *
-from ..dependencies import *
-from ..session.sessions import *
+from services.order_services import reformat_orders_from_db
+from schemas.cart_schemas import ProductCart
+from schemas.order_schemas import *
+from schemas.extra_schemas import *
+from crud import order_crud
+from auth.dependencies import *
+from dependencies import *
+from session.sessions import *
 
 
 router = APIRouter(

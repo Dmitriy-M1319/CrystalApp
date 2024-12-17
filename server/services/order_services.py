@@ -1,4 +1,4 @@
-from ..crud import product_crud
+from crud import product_crud
 
 
 def reformat_order(db, order):
