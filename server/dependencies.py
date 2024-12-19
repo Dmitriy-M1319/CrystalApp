@@ -1,5 +1,7 @@
 from typing import Annotated
+from functools import lru_cache
 
+from config import Settings
 from fastapi import Header, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -7,6 +9,9 @@ from models.user import User
 from db_engine import SessionLocal
 from auth.dependencies import get_current_user
 
+@lru_cache
+def get_settings():
+    return Settings()
 
 def get_database_session():
     database = SessionLocal()
