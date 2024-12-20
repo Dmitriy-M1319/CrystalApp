@@ -7,5 +7,6 @@ class Settings(BaseSettings):
     database_password: str = ""
     database_name: str = ""
     report_server_address: str = ""
+    reports_storage: str = ""
     
     model_config = SettingsConfigDict(env_file=".env")

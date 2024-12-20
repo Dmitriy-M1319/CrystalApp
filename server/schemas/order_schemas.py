@@ -27,3 +27,7 @@ class OrderGetForClient(OrderCreate):
 
 class OrderGetForAdmin(OrderGetForClient):
     client: UserModel
+    
+class GetOrdersReport(BaseModel):
+    from_date: str
+    to_date: str
